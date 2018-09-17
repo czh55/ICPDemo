@@ -1,12 +1,23 @@
+#define PCD 
+
+
+
 
 #include <iostream>
 #include <string>
-
-#include <pcl/io/ply_io.h>
+#include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/registration/icp.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/console/time.h>   // TicToc
+
+#ifdef PLY
+#include <pcl/io/ply_io.h>
+#endif // PLY
+
+#ifdef PCD
+#include <pcl/io/pcd_io.h>
+#endif // PCD
 
 typedef pcl::PointXYZ PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
@@ -41,33 +52,18 @@ main(int argc,
 	PointCloudT::Ptr cloud_tr(new PointCloudT);  // Transformed point cloud
 	PointCloudT::Ptr cloud_icp(new PointCloudT);  // ICP output point cloud
 
-												  /*									  // Checking program arguments
-												  if (argc < 2)
-												  {
-												  printf("Usage :\n");
-												  printf("\t\t%s file.ply number_of_ICP_iterations\n", argv[0]);
-												  PCL_ERROR("Provide one ply file.\n");
-												  system("pause");
-												  return (-1);
-												  }*/
-
 	int iterations = 20;  // Default number of ICP iterations
-						  /*
-						  if (argc > 2)
-						  {
-						  // If the user passed the number of iteration as an argument
-						  iterations = atoi(argv[2]);
-						  if (iterations < 1)
-						  {
-						  PCL_ERROR("Number of initial iterations must be >= 1\n");
-						  system("pause");
-						  return (-1);
-						  }
-						  }*/
 
 	pcl::console::TicToc time;
 	time.tic();
+
+	#ifdef PLY
 	if (pcl::io::loadPLYFile("bunny.ply", *cloud_in) < 0)
+	#endif // PLY
+
+	#ifdef PCD
+	if (pcl::io::loadPCDFile("22.pcd", *cloud_in) < 0)
+	#endif // PCD
 	{
 		PCL_ERROR("Error loading cloud %s.\n", "dragon.ply");
 		system("pause");
