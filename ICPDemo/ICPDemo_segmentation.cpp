@@ -1,12 +1,21 @@
+#define PCD
 
 #include <iostream>
 #include <string>
-#include <pcl/io/pcd_io.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/registration/icp.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/console/time.h>   // TicToc
+
+#ifdef PLY
+#include <pcl/io/ply_io.h>
+#endif // PLY
+
+#ifdef PCD
+#include <pcl/io/pcd_io.h>
+#endif // PCD
+
+
 
 typedef pcl::PointXYZ PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
@@ -37,39 +46,65 @@ main(int argc,
 	char* argv[])
 {
 	// The point clouds we will be using
-	PointCloudT::Ptr cloud_in(new PointCloudT);  // Original point cloud
+	PointCloudT::Ptr cloud_in_1(new PointCloudT);  // Original point cloud
+	PointCloudT::Ptr cloud_in_2(new PointCloudT);  // Original point cloud
+	PointCloudT::Ptr cloud_in_all(new PointCloudT);  // Original point cloud 
 	PointCloudT::Ptr cloud_tr(new PointCloudT);  // Transformed point cloud
 	PointCloudT::Ptr cloud_icp(new PointCloudT);  // ICP output point cloud
 
-	int iterations = 50;  // Default number of ICP iterations
+	int iterations = 20;  // Default number of ICP iterations
 
 	pcl::console::TicToc time;
 	time.tic();
 
-	if (pcl::io::loadPCDFile("22_colored_part1.pcd", *cloud_in) < 0 || pcl::io::loadPCDFile("22_colored_part2.pcd", *cloud_icp) < 0)
+	#ifdef PLY
+	if (pcl::io::loadPLYFile("bunny.ply", *cloud_in_1) < 0 || pcl::io::loadPLYFile("bunny_part1.ply", *cloud_in_2) < 0)
+	#endif // PLY
+
+	#ifdef PCD
+	if (pcl::io::loadPCDFile("rock_2.pcd", *cloud_in_1) < 0 || pcl::io::loadPCDFile("rock_1.pcd", *cloud_in_2))
+	#endif // PCD
 	{
 		PCL_ERROR("Error loading cloud %s.\n", "dragon.ply");
 		system("pause");
 		return (-1);
 	}
-	std::cout << "\nLoaded file " << "dragon.ply" << " (" << cloud_in->size() << " points) in " << time.toc() << " ms\n" << std::endl;
+	std::cout << "\nLoaded file " << "dragon.ply" << " (" << cloud_in_1->size() << " points) in " << time.toc() << " ms\n" << std::endl;
+	std::cout << "\nLoaded file " << "dragon.ply" << " (" << cloud_in_2->size() << " points) in " << time.toc() << " ms\n" << std::endl;
 
+	// Defining a rotation matrix and translation vector
+	Eigen::Matrix4d transformation_matrix = Eigen::Matrix4d::Identity();
+
+	// A rotation matrix (see https://en.wikipedia.org/wiki/Rotation_matrix)
+	double theta = M_PI / 2;  // The angle of rotation in radians
+	transformation_matrix(0, 0) =  cos(theta);
+	transformation_matrix(0, 1) =  -sin(theta);
+	transformation_matrix(1, 0) =  sin(theta);
+	transformation_matrix(1, 1) =  cos(theta);
+
+	// A translation on Z axis (0.4 meters)
+	transformation_matrix(2, 3) = 0.4;
+
+	// Display in terminal the transformation matrix
+	std::cout << "Applying this rigid transformation to: cloud_in -> cloud_icp" << std::endl;
+	print4x4Matrix(transformation_matrix);
+
+	// Executing the transformation
+	pcl::transformPointCloud(*cloud_in_2, *cloud_icp, transformation_matrix);
 	
 	*cloud_tr = *cloud_icp;  // We backup cloud_icp into cloud_tr for later use
 
 							 // The Iterative Closest Point algorithm
 	time.tic();
+
 	pcl::IterativeClosestPoint<PointT, PointT> icp;
 	icp.setMaximumIterations(iterations);
 	icp.setInputSource(cloud_icp);
-	icp.setInputTarget(cloud_in);
+	icp.setInputTarget(cloud_in_1);
 	icp.align(*cloud_icp);
 	icp.setMaximumIterations(1);  // We set this variable to 1 for the next time we will call .align () function
 	std::cout << "Applied " << iterations << " ICP iteration(s) in " << time.toc() << " ms" << std::endl;
 
-
-	// Defining a rotation matrix and translation vector
-	Eigen::Matrix4d transformation_matrix = Eigen::Matrix4d::Identity();
 
 	if (icp.hasConverged())
 	{
@@ -98,10 +133,10 @@ main(int argc,
 	float txt_gray_lvl = 1.0 - bckgr_gray_level;
 
 	// Original point cloud is white
-	pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_in_color_h(cloud_in, (int)255 * txt_gray_lvl, (int)255 * txt_gray_lvl,
+	pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_in_color_h(cloud_in_1, (int)255 * txt_gray_lvl, (int)255 * txt_gray_lvl,
 		(int)255 * txt_gray_lvl);
-	viewer.addPointCloud(cloud_in, cloud_in_color_h, "cloud_in_v1", v1);
-	viewer.addPointCloud(cloud_in, cloud_in_color_h, "cloud_in_v2", v2);
+	viewer.addPointCloud(cloud_in_1, cloud_in_color_h, "cloud_in_v1", v1);
+	viewer.addPointCloud(cloud_in_1, cloud_in_color_h, "cloud_in_v2", v2);
 
 	// Transformed point cloud is green
 	pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_tr_color_h(cloud_tr, 20, 180, 20);
@@ -110,6 +145,10 @@ main(int argc,
 	// ICP aligned point cloud is red
 	pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_icp_color_h(cloud_icp, 180, 20, 20);
 	viewer.addPointCloud(cloud_icp, cloud_icp_color_h, "cloud_icp_v2", v2);
+
+	// Orginal point cloud is blue
+	//pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_all_color_h(cloud_in_all, 0, 191, 255);
+	//viewer.addPointCloud(cloud_in_all, cloud_all_color_h, "cloud_all_v2", v2);
 
 	// Adding text descriptions in each viewport
 	viewer.addText("White: Original point cloud\nGreen: Matrix transformed point cloud", 10, 15, 16, txt_gray_lvl, txt_gray_lvl, txt_gray_lvl, "icp_info_1", v1);
