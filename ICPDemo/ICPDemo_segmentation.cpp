@@ -42,7 +42,7 @@ keyboardEventOccurred(const pcl::visualization::KeyboardEvent& event,
 }
 
 void 
-savePointCloudFile(PointCloudT::Ptr cloud_in_1, PointCloudT::Ptr cloud_icp) {
+savePointCloudFile(PointCloudT::Ptr cloud_in_1, PointCloudT::Ptr cloud_icp, int iterations) {
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr mergeCloud(new pcl::PointCloud<pcl::PointXYZRGB>);
 
 	for (int j = 0; j < cloud_in_1->points.size(); j += 1)
@@ -73,17 +73,23 @@ savePointCloudFile(PointCloudT::Ptr cloud_in_1, PointCloudT::Ptr cloud_icp) {
 	mergeCloud->width = mergeCloud->points.size();
 	mergeCloud->is_dense = false;
 
+	std::stringstream ss;
+	ss << iterations;
+	std::string fileName = "CPmerge2-in-out-icp-" + ss.str() + ".pcd";
+
 #ifdef PLY
 	pcl::io::savePLYFileBinary("Output.ply", *mergeCloud);
 #endif // PLY
 
 #ifdef PCD
-	pcl::io::savePCDFile("ICPmerge2-in-out-icp.pcd", *mergeCloud);
+	pcl::io::savePCDFile(fileName, *mergeCloud);
 #endif // PCD
 
 	// 清除数据并退出
 	mergeCloud->points.clear();
-	std::cout << "已保存为ICPmerge2-in-out-icp.pcd" << std::endl;
+	std::cout << "已保存为"<< fileName << std::endl;
+
+
 
 
 }
@@ -99,7 +105,7 @@ main(int argc,
 	PointCloudT::Ptr cloud_tr(new PointCloudT);  // Transformed point cloud
 	PointCloudT::Ptr cloud_icp(new PointCloudT);  // ICP output point cloud
 
-	int iterations = 20;  // Default number of ICP iterations
+	int iterations = 10;  // Default number of ICP iterations
 
 	pcl::console::TicToc time;
 	time.tic();
@@ -161,7 +167,7 @@ main(int argc,
 		print4x4Matrix(transformation_matrix);
 
 		//update file
-		savePointCloudFile(cloud_in_1, cloud_icp);
+		savePointCloudFile(cloud_in_1, cloud_icp, iterations);
 	}
 	else
 	{
@@ -248,7 +254,7 @@ main(int argc,
 				viewer.updatePointCloud(cloud_icp, cloud_icp_color_h, "cloud_icp_v2");
 
 				//update file
-				savePointCloudFile(cloud_in_1, cloud_icp);
+				savePointCloudFile(cloud_in_1, cloud_icp, iterations);
 			}
 			else
 			{
