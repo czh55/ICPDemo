@@ -62,7 +62,7 @@ main(int argc,
 #endif // PLY
 
 #ifdef PCD
-		if (pcl::io::loadPCDFile("rock_1.pcd", *cloud_in_1) < 0 || pcl::io::loadPCDFile("rock_1.pcd", *cloud_in_2))
+		if (pcl::io::loadPCDFile("rock_all.pcd", *cloud_in_1) < 0 || pcl::io::loadPCDFile("rock_1.pcd", *cloud_in_2))
 #endif // PCD
 		{
 			PCL_ERROR("Error loading cloud %s.\n", "dragon.ply");

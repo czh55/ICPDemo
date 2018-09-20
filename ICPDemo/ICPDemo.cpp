@@ -1,8 +1,5 @@
 #define PCD 
 
-
-
-
 #include <iostream>
 #include <string>
 #include <pcl/io/pcd_io.h>

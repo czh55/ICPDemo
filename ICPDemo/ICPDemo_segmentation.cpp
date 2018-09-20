@@ -76,7 +76,7 @@ main(int argc,
 	Eigen::Matrix4d transformation_matrix = Eigen::Matrix4d::Identity();
 
 	// A rotation matrix (see https://en.wikipedia.org/wiki/Rotation_matrix)
-	double theta = M_PI / 2;  // The angle of rotation in radians
+	double theta = M_PI / 8;  // The angle of rotation in radians
 	transformation_matrix(0, 0) =  cos(theta);
 	transformation_matrix(0, 1) =  -sin(theta);
 	transformation_matrix(1, 0) =  sin(theta);
