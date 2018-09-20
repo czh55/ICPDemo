@@ -77,13 +77,13 @@ main(int argc,
 
 	// A rotation matrix (see https://en.wikipedia.org/wiki/Rotation_matrix)
 	double theta = M_PI / 2;  // The angle of rotation in radians
-	transformation_matrix(0, 0) =  sin(theta);
-	transformation_matrix(0, 1) = cos(theta);
-	transformation_matrix(1, 0) = cos(theta);
+	transformation_matrix(0, 0) =  -sin(theta);
+	transformation_matrix(0, 1) =  cos(theta);
+	transformation_matrix(1, 0) =  cos(theta);
 	transformation_matrix(1, 1) =  sin(theta);
 
 	// A translation on Z axis (0.4 meters)
-	transformation_matrix(2, 3) = 0.4;
+	//transformation_matrix(2, 3) = 0.4;
 
 	// Display in terminal the transformation matrix
 	std::cout << "Applying this rigid transformation to: cloud_in -> cloud_icp" << std::endl;
@@ -99,9 +99,6 @@ main(int argc,
 
 	// Visualization
 	pcl::visualization::PCLVisualizer viewer("ICP demo");
-	// Create two vertically separated viewports
-	int v1(0);
-	viewer.createViewPort(0.0, 0.0, 0.5, 1.0, v1);
 
 	// The color we will be using
 	float bckgr_gray_level = 0.0;  // Black
@@ -110,18 +107,18 @@ main(int argc,
 	// Original point cloud is white
 	pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_in_color_h(cloud_in_1, (int)255 * txt_gray_lvl, (int)255 * txt_gray_lvl,
 		(int)255 * txt_gray_lvl);
-	viewer.addPointCloud(cloud_in_1, cloud_in_color_h, "cloud_in_v1", v1);
+	viewer.addPointCloud(cloud_in_1, cloud_in_color_h, "cloud_in_v1");
 
 	// Transformed point cloud is green
 	pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_tr_color_h(cloud_tr, 20, 180, 20);
-	viewer.addPointCloud(cloud_tr, cloud_tr_color_h, "cloud_tr_v1", v1);
+	viewer.addPointCloud(cloud_tr, cloud_tr_color_h, "cloud_tr_v1");
 
 
 	// Adding text descriptions in each viewport
-	viewer.addText("White: Original point cloud\nGreen: Matrix transformed point cloud", 10, 15, 16, txt_gray_lvl, txt_gray_lvl, txt_gray_lvl, "icp_info_1", v1);
+	viewer.addText("White: Original point cloud\nGreen: Matrix transformed point cloud", 10, 15, 16, txt_gray_lvl, txt_gray_lvl, txt_gray_lvl, "icp_info_1");
 
 	// Set background color
-	viewer.setBackgroundColor(bckgr_gray_level, bckgr_gray_level, bckgr_gray_level, v1);
+	viewer.setBackgroundColor(bckgr_gray_level, bckgr_gray_level, bckgr_gray_level);
 
 	// Set camera position and orientation
 	viewer.setCameraPosition(-3.68332, 2.94092, 5.71266, 0.289847, 0.921947, -0.256907, 0);
