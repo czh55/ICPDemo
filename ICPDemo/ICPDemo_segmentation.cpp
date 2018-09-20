@@ -15,8 +15,6 @@
 #include <pcl/io/pcd_io.h>
 #endif // PCD
 
-
-
 typedef pcl::PointXYZ PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
 
@@ -75,7 +73,7 @@ savePointCloudFile(PointCloudT::Ptr cloud_in_1, PointCloudT::Ptr cloud_icp, int 
 
 	std::stringstream ss;
 	ss << iterations;
-	std::string fileName = "CPmerge2-in-out-icp-" + ss.str() + ".pcd";
+	std::string fileName = "ICPmerge2-in-out-icp-" + ss.str() + ".pcd";
 
 #ifdef PLY
 	pcl::io::savePLYFileBinary("Output.ply", *mergeCloud);
@@ -88,9 +86,6 @@ savePointCloudFile(PointCloudT::Ptr cloud_in_1, PointCloudT::Ptr cloud_icp, int 
 	// 清除数据并退出
 	mergeCloud->points.clear();
 	std::cout << "已保存为"<< fileName << std::endl;
-
-
-
 
 }
 

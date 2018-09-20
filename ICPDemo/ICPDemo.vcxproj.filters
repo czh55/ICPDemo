@@ -21,5 +21,8 @@
     <ClCompile Include="ICPDemo_segmentation.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="PointAll2One.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
