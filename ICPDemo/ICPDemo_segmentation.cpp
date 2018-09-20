@@ -41,6 +41,53 @@ keyboardEventOccurred(const pcl::visualization::KeyboardEvent& event,
 		next_iteration = true;
 }
 
+void 
+savePointCloudFile(PointCloudT::Ptr cloud_in_1, PointCloudT::Ptr cloud_icp) {
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr mergeCloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+
+	for (int j = 0; j < cloud_in_1->points.size(); j += 1)
+	{
+		pcl::PointXYZRGB p;
+		p.x = cloud_in_1->points[j].x;
+		p.y = cloud_in_1->points[j].y;
+		p.z = cloud_in_1->points[j].z;
+		p.r = 255;//红色
+		p.g = 0;
+		p.b = 0;
+		mergeCloud->points.push_back(p);
+	}
+
+	for (int j = 0; j < cloud_icp->points.size(); j += 1)
+	{
+		pcl::PointXYZRGB p;
+		p.x = cloud_icp->points[j].x;
+		p.y = cloud_icp->points[j].y;
+		p.z = cloud_icp->points[j].z;
+		p.r = 20;//绿色
+		p.g = 180;
+		p.b = 20;
+		mergeCloud->points.push_back(p);
+	}
+	// 设置并保存点云
+	mergeCloud->height = 1;
+	mergeCloud->width = mergeCloud->points.size();
+	mergeCloud->is_dense = false;
+
+#ifdef PLY
+	pcl::io::savePLYFileBinary("Output.ply", *mergeCloud);
+#endif // PLY
+
+#ifdef PCD
+	pcl::io::savePCDFile("ICPmerge2-in-out-icp.pcd", *mergeCloud);
+#endif // PCD
+
+	// 清除数据并退出
+	mergeCloud->points.clear();
+	std::cout << "已保存为ICPmerge2-in-out-icp.pcd" << std::endl;
+
+
+}
+
 int
 main(int argc,
 	char* argv[])
@@ -94,7 +141,7 @@ main(int argc,
 	
 	*cloud_tr = *cloud_icp;  // We backup cloud_icp into cloud_tr for later use
 
-							 // The Iterative Closest Point algorithm
+	// The Iterative Closest Point algorithm
 	time.tic();
 
 	pcl::IterativeClosestPoint<PointT, PointT> icp;
@@ -112,6 +159,9 @@ main(int argc,
 		std::cout << "\nICP transformation " << iterations << " : cloud_icp -> cloud_in" << std::endl;
 		transformation_matrix = icp.getFinalTransformation().cast<double>();
 		print4x4Matrix(transformation_matrix);
+
+		//update file
+		savePointCloudFile(cloud_in_1, cloud_icp);
 	}
 	else
 	{
@@ -167,7 +217,7 @@ main(int argc,
 	viewer.setCameraPosition(-3.68332, 2.94092, 5.71266, 0.289847, 0.921947, -0.256907, 0);
 	viewer.setSize(1280, 1024);  // Visualiser window size
 
-								 // Register keyboard callback :
+	// Register keyboard callback :
 	viewer.registerKeyboardCallback(&keyboardEventOccurred, (void*)NULL);
 
 	// Display the visualiser
@@ -196,6 +246,9 @@ main(int argc,
 				std::string iterations_cnt = "ICP iterations = " + ss.str();
 				viewer.updateText(iterations_cnt, 10, 60, 16, txt_gray_lvl, txt_gray_lvl, txt_gray_lvl, "iterations_cnt");
 				viewer.updatePointCloud(cloud_icp, cloud_icp_color_h, "cloud_icp_v2");
+
+				//update file
+				savePointCloudFile(cloud_in_1, cloud_icp);
 			}
 			else
 			{
