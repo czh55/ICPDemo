@@ -100,7 +100,7 @@ main(int argc,
 	PointCloudT::Ptr cloud_tr(new PointCloudT);  // Transformed point cloud
 	PointCloudT::Ptr cloud_icp(new PointCloudT);  // ICP output point cloud
 
-	int iterations = 10;  // Default number of ICP iterations
+	int iterations = 200;  // Default number of ICP iterations
 
 	pcl::console::TicToc time;
 	time.tic();

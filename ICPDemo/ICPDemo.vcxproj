@@ -142,8 +142,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ICPDemo_segmentation.cpp" />
-    <ClCompile Include="PointAll2One.cpp" />
+    <ClCompile Include="SAC_ICP.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
