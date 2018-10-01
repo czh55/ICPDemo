@@ -18,7 +18,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SAC_ICP.cpp">
+    <ClCompile Include="RegistrationUsingPlane.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

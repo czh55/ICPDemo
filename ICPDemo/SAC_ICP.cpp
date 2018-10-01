@@ -1,6 +1,6 @@
 //blog.csdn.net/peach_blossom/article/details/78506184
 
-#define PCD 
+#define PLY 
 
 #include <pcl/registration/ia_ransac.h>
 #include <pcl/point_types.h>
@@ -30,7 +30,7 @@ typedef pcl::PointXYZ PointT;
 typedef pcl::PointCloud<PointT> PointCloud;
 
 //icp迭代次数
-int iterations = 50;
+int iterations = 100;
 
 void visualization(PointCloud::Ptr source_cloud1_registration,  PointCloud::Ptr cloud_tr, PointCloud::Ptr cloud_icp)
 {
@@ -198,17 +198,28 @@ main(int argc, char** argv)
 	transformation(*cloud_src_o, *cloud_tr_o);
 
 	clock_t start = clock();
-	//去除NAN点
+	//去除NAN点 cloud_tr_o
 	std::vector<int> indices_src; //保存去除的点的索引
 	pcl::removeNaNFromPointCloud(*cloud_tr_o, *cloud_tr_o, indices_src);
 	std::cout << "remove *cloud_tr_o nan" << endl;
-	//下采样滤波
+	//去除NAN点 cloud_tgt_o
+	std::vector<int> indices_tgt;
+	pcl::removeNaNFromPointCloud(*cloud_tgt_o, *cloud_tgt_o, indices_tgt);
+	std::cout << "remove *cloud_tgt_o nan" << endl;
+	//下采样滤波 cloud_tr_o
 	pcl::VoxelGrid<pcl::PointXYZ> voxel_grid;
-	voxel_grid.setLeafSize(0.012, 0.012, 0.012);
+	voxel_grid.setLeafSize(0.02, 0.02, 0.02);
 	voxel_grid.setInputCloud(cloud_tr_o);
 	PointCloud::Ptr cloud_tr(new PointCloud);
 	voxel_grid.filter(*cloud_tr);
 	std::cout << "down size *cloud_tr_o from " << cloud_tr_o->size() << "to" << cloud_tr->size() << endl;
+	//下采样滤波 cloud_tgt_o
+	pcl::VoxelGrid<pcl::PointXYZ> voxel_grid_2;
+	voxel_grid_2.setLeafSize(0.02, 0.02, 0.02);
+	voxel_grid_2.setInputCloud(cloud_tgt_o);
+	PointCloud::Ptr cloud_tgt(new PointCloud);
+	voxel_grid_2.filter(*cloud_tgt);
+	std::cout << "down size *cloud_tgt_o.pcd from " << cloud_tgt_o->size() << "to" << cloud_tgt->size() << endl;
 	
 
 #ifdef PLY
@@ -227,18 +238,6 @@ main(int argc, char** argv)
 	pcl::PointCloud<pcl::Normal>::Ptr cloud_src_normals(new pcl::PointCloud< pcl::Normal>);
 	ne_src.setRadiusSearch(0.02);
 	ne_src.compute(*cloud_src_normals);
-
-	std::vector<int> indices_tgt;
-	pcl::removeNaNFromPointCloud(*cloud_tgt_o, *cloud_tgt_o, indices_tgt);
-	std::cout << "remove *cloud_tgt_o nan" << endl;
-
-	pcl::VoxelGrid<pcl::PointXYZ> voxel_grid_2;
-	voxel_grid_2.setLeafSize(0.01, 0.01, 0.01);
-	voxel_grid_2.setInputCloud(cloud_tgt_o);
-	PointCloud::Ptr cloud_tgt(new PointCloud);
-	voxel_grid_2.filter(*cloud_tgt);
-	std::cout << "down size *cloud_tgt_o.pcd from " << cloud_tgt_o->size() << "to" << cloud_tgt->size() << endl;
-
 #ifdef PLY
 	pcl::io::savePLYFileASCII("bunny_src_down.ply", *cloud_tr);
 #endif // PLY
@@ -246,7 +245,6 @@ main(int argc, char** argv)
 #ifdef PCD
 	pcl::io::savePCDFileASCII("bunny_src_down.pcd", *cloud_tr);
 #endif // PCD
-
 	pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne_tgt;
 	ne_tgt.setInputCloud(cloud_tgt);
 	pcl::search::KdTree< pcl::PointXYZ>::Ptr tree_tgt(new pcl::search::KdTree< pcl::PointXYZ>());
@@ -304,7 +302,7 @@ main(int argc, char** argv)
 	//显示SAC效果
 	visualization(cloud_tgt, cloud_tr, sac_result);
 
-	/*
+	
 	//icp配准
 	PointCloud::Ptr icp_result(new PointCloud);
 	pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
@@ -362,6 +360,6 @@ main(int argc, char** argv)
 
 	//可视化
 	visualize_pcd(cloud_tr_o, cloud_tgt_o, icp_result);
-	*/
+	
 	return (0);
 }
