@@ -21,7 +21,7 @@ int PCDtoPLYconvertor(string & input_filename, string& output_filename)
 int main()
 {
 	string input_filename = "data/rock_all.pcd";
-	string output_filename = "result/rock_all.ply";
+	string output_filename = "result_pcd2ply/rock_all.ply";
 	PCDtoPLYconvertor(input_filename, output_filename);
 	system("pause");
 	return 0;

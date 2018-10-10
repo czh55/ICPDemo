@@ -9,6 +9,7 @@ ICPDemo_segmentation.cpp：主要文件.依然是是用ICP算法，单独写函�
 PointAll2One.cpp：两个点云进行合并，保存
 SAC_ICP.cpp：先SAC，在ICP配准
 RegistrationUsingPlane.cpp：基于平面的配准，有自己的数据集：dataForPlane
+result_pcd2ply文件夹用来保存PCD转ply的结果
 
 参考博客ICPDemo.cpp：
 https://blog.csdn.net/zmdsjtu/article/details/79871165
