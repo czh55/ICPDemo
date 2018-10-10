@@ -1,4 +1,6 @@
 #define PCD
+#define INPUT_NAME_1 "data/rock_all.pcd"
+#define INPUT_NAME_2 "data/rock_1.pcd"
 
 #include <iostream>
 #include <string>
@@ -6,6 +8,7 @@
 #include <pcl/registration/icp.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/console/time.h>   // TicToc
+
 
 #ifdef PLY
 #include <pcl/io/ply_io.h>
@@ -62,7 +65,7 @@ main(int argc,
 #endif // PLY
 
 #ifdef PCD
-		if (pcl::io::loadPCDFile("rock_all.pcd", *cloud_in_1) < 0 || pcl::io::loadPCDFile("rock_1.pcd", *cloud_in_2))
+		if (pcl::io::loadPCDFile(INPUT_NAME_1, *cloud_in_1) < 0 || pcl::io::loadPCDFile(INPUT_NAME_2, *cloud_in_2))
 #endif // PCD
 		{
 			PCL_ERROR("Error loading cloud %s.\n", "dragon.ply");
@@ -94,7 +97,7 @@ main(int argc,
 
 	*cloud_tr = *cloud_icp;  // We backup cloud_icp into cloud_tr for later use
 
-							 // The Iterative Closest Point algorithm
+	// The Iterative Closest Point algorithm
 	time.tic();
 
 	// Visualization

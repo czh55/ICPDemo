@@ -84,7 +84,7 @@ void FindSimilarPoly();																				//寻找相似多边形;
 void registration();																				//配准过程;
 void Match();																						//两个多边形公共部分匹配;
 void normalize();																					//归一化过程;
-float getPolyArea(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);										//求多边形面积;
+float GetPolyArea(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);										//求多边形面积;
 bool PublicArea();																					//获取两个多边形公共区域;
 bool GetCrossPoint(int s_first, int s_next, int t_first, int t_next, float &x, float &y);			//求两个线段的交点;
 bool IsRectCross(int s_first, int s_next, int t_first, int t_next);									//排斥实验;
@@ -767,7 +767,7 @@ void Match()
 }
 
 /***************************************************************************************************************************************/
-/*计算变换矩阵;*/
+/*计算变换矩阵;边的配准*/
 void registration()
 {
 

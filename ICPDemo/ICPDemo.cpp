@@ -59,7 +59,7 @@ main(int argc,
 	#endif // PLY
 
 	#ifdef PCD
-	if (pcl::io::loadPCDFile("22.pcd", *cloud_in) < 0)
+	if (pcl::io::loadPCDFile("data/22.pcd", *cloud_in) < 0)
 	#endif // PCD
 	{
 		PCL_ERROR("Error loading cloud %s.\n", "dragon.ply");

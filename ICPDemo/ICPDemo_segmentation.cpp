@@ -1,4 +1,7 @@
 #define PCD
+#define INPUT_NAME_1 "data/rock_2.pcd"
+#define INPUT_NAME_2 "data/rock_1.pcd"
+int iterations = 200;  // Default number of ICP iterations
 
 #include <iostream>
 #include <string>
@@ -100,7 +103,7 @@ main(int argc,
 	PointCloudT::Ptr cloud_tr(new PointCloudT);  // Transformed point cloud
 	PointCloudT::Ptr cloud_icp(new PointCloudT);  // ICP output point cloud
 
-	int iterations = 200;  // Default number of ICP iterations
+	
 
 	pcl::console::TicToc time;
 	time.tic();
@@ -110,7 +113,7 @@ main(int argc,
 	#endif // PLY
 
 	#ifdef PCD
-	if (pcl::io::loadPCDFile("rock_2.pcd", *cloud_in_1) < 0 || pcl::io::loadPCDFile("rock_1.pcd", *cloud_in_2))
+	if (pcl::io::loadPCDFile(INPUT_NAME_1, *cloud_in_1) < 0 || pcl::io::loadPCDFile(INPUT_NAME_2, *cloud_in_2))
 	#endif // PCD
 	{
 		PCL_ERROR("Error loading cloud %s.\n", "dragon.ply");

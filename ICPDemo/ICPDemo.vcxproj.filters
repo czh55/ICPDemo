@@ -18,7 +18,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="PLY2PCD.cpp">
+    <ClCompile Include="ICPDemo_segmentation.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
